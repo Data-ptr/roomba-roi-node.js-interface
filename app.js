@@ -1,7 +1,14 @@
-var SerialPort  = require('../').SerialPort;
+var SerialPort  = require('serialport').SerialPort;
 var Buffer      = require('buffer').Buffer;
-var port        = new SerialPort();
+var port        = new SerialPort( '/dev/ttyAMA0',
+            {
+                baudRate:   115200,
+                dataBits:   8,
+                parity:     'none',
+                stopBits:   1
+            });
 
+console.log('Hello?');
 
 var driveMethods    =   [
                             'drive',
@@ -34,7 +41,16 @@ var clean           =   undefined;
 //Setup
 port.on('data', function(data)
 {
-    console.log(data.toString());
+    var inBuf = new Buffer(data.length);
+
+    var stringOut = '- ';
+
+    for(var i = 0; i < data.length; i++)
+    {
+        stringOut += inBuf.readUInt8(i) + ', ';
+    }
+
+    console.log(stringOut);
 });
 
 
@@ -43,7 +59,7 @@ port.on('error', function(err)
     console.log(err);
 });
 
-
+/*
 port.open(  '/dev/ttyAMA0',
             {
                 baudRate:   115200,
@@ -56,7 +72,7 @@ port.open(  '/dev/ttyAMA0',
                 port.write("There was an error opening the port: " + err);
                 port.close();
             });
-
+*/
 
 //Util functions
 
@@ -67,20 +83,20 @@ function sendCommand(opCode, toMode, dataBytes)
         console.log('Invalid opcode: ' + opCode);
         return 0;
     }
-    else if(dataBytes !== undefined && !(dataBytes instanceof Array))
+    else if((toMode === undefined && dataBytes === undefined) || (dataBytes !== undefined && !(dataBytes instanceof Array)))
     {
-        console.log('dataBytes must be an array');
+        console.log('dataBytes must be an arrayi or toMode must be provided');
         return 0;
     }
     else
     {
-        var buf = new Buffer(1 + dataBytes.length);
+        var buf = new Buffer(1 + (dataBytes === undefined ? 0 : dataBytes.length));
 
         buf[0]  = opCode;
 
         if(dataBytes !== undefined)
         {
-            for(int i = 0; i < dataBytes.length; i++)
+            for(var i = 0; i < dataBytes.length; i++)
             {
                 buf[i + 1] = dataBytes[i];
             }
@@ -109,7 +125,7 @@ function changeBaud(baudCode)
 {
     if(mode === modes[1] || mode === modes[2] || mode === modes[3])
     {
-        if(baudCode >= 0 && < 12)
+        if(baudCode >= 0 && baudCode < 12)
         {
             sendCommand(129, undefined, [baudeCode]);
         }
@@ -214,7 +230,7 @@ function addSong(songNumber, songLength, notes)
 
 function playSong(songNumber)
 {
-    f(mode === modes[2] || mode === modes[3])
+    if(mode === modes[2] || mode === modes[3])
     {
         sendCommand(141, undefined, [songNumber]);
     }

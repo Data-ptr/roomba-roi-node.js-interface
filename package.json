@@ -1,0 +1,21 @@
+{
+  "author": "Jane Hacker <jane@wearelollipop.com> (janehacker.com)",
+  "name": "telepres",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  },
+  "readmeFilename": "README.md",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "BSD"
+}
