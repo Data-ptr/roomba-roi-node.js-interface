@@ -1,6 +1,3 @@
-//var SerialPort  = require('serialport2').SerialPort;
-//var port        = new SerialPort();
-
 var SerialPort  = require('serialport').SerialPort;
 var port        = new SerialPort( '/dev/ttyAMA0',
             {
@@ -45,40 +42,33 @@ var clean           =   undefined;
 
 
 //Setup
-port.on('data', function(data)
+serialPort.on("open", function ()
 {
-    var inBuf = new Buffer(data.length);
+    console.log('Serial port open');
 
-    var stringOut = '- ';
-
-    for(var i = 0; i < data.length; i++)
+    port.on('data', function(data)
     {
-        stringOut += inBuf.readUInt8(i) + ', ';
-    }
+        var inBuf = new Buffer(data.length);
 
-    console.log(stringOut);
+        var stringOut = '- ';
+
+        for(var i = 0; i < data.length; i++)
+        {
+            stringOut += inBuf.readUInt8(i) + ', ';
+        }
+
+        console.log(stringOut);
+    });
+
+    port.on('error', function(err)
+    {
+        console.log(err);
+    }); 
+
+    init();
+    changeMode(modes[2]); 
 });
 
-
-port.on('error', function(err)
-{
-    console.log(err);
-});
-
-/*
-port.open(  '/dev/ttyAMA0',
-            {
-                baudRate:   115200,
-                dataBits:   8,
-                parity:     'none',
-                stopBits:   1
-            },
-            function(err)
-            {
-                port.write("There was an error opening the port: " + err);
-                port.close();
-            });
-*/
 
 //Util functions
 
@@ -108,8 +98,12 @@ function sendCommand(opCode, toMode, dataBytes)
             }
         }
 
-        port.write('Hello?');
-
+        port.write(buf, function(err, results)
+        {
+            console.log('Serial write error: ' + err);
+            console.log('Serial write result: ' + results);
+        });
+        
         if(toMode !== undefined)
         {
             mode    = toMode;
@@ -245,6 +239,3 @@ function playSong(songNumber)
         console.log('Cannot initiate this command in ' + mode + ' mode.');
     }
 }
-
-init();
-changeMode(modes[2]);
