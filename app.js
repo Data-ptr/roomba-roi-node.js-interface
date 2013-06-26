@@ -41,35 +41,6 @@ var mode            =   modes[0];
 var clean           =   undefined;
 
 
-//Setup
-serialPort.on("open", function ()
-{
-    console.log('Serial port open');
-
-    port.on('data', function(data)
-    {
-        var inBuf = new Buffer(data.length);
-
-        var stringOut = '- ';
-
-        for(var i = 0; i < data.length; i++)
-        {
-            stringOut += inBuf.readUInt8(i) + ', ';
-        }
-
-        console.log(stringOut);
-    });
-
-    port.on('error', function(err)
-    {
-        console.log(err);
-    }); 
-
-    init();
-    changeMode(modes[2]); 
-});
-
-
 //Util functions
 
 function sendCommand(opCode, toMode, dataBytes)
@@ -103,7 +74,7 @@ function sendCommand(opCode, toMode, dataBytes)
             console.log('Serial write error: ' + err);
             console.log('Serial write result: ' + results);
         });
-        
+
         if(toMode !== undefined)
         {
             mode    = toMode;
@@ -239,3 +210,32 @@ function playSong(songNumber)
         console.log('Cannot initiate this command in ' + mode + ' mode.');
     }
 }
+
+
+//Setup
+port.on(open, function()
+{
+    console.log('Serial port open');
+
+    port.on('data', function(data)
+    {
+        var inBuf = new Buffer(data.length);
+
+        var stringOut = '- ';
+
+        for(var i = 0; i < data.length; i++)
+        {
+            stringOut += inBuf.readUInt8(i) + ', ';
+        }
+
+        console.log(stringOut);
+    });
+
+    port.on('error', function(err)
+    {
+        console.log(err);
+    }); 
+
+    setTimeout(init, 50);
+    setTimeout(changeMode, 100, modes[2]); 
+});
