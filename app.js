@@ -1,5 +1,7 @@
+//var SerialPort  = require('serialport2').SerialPort;
+//var port        = new SerialPort();
+
 var SerialPort  = require('serialport').SerialPort;
-var Buffer      = require('buffer').Buffer;
 var port        = new SerialPort( '/dev/ttyAMA0',
             {
                 baudRate:   115200,
@@ -8,7 +10,11 @@ var port        = new SerialPort( '/dev/ttyAMA0',
                 stopBits:   1
             });
 
-console.log('Hello?');
+var Buffer      = require('buffer').Buffer;
+
+
+console.log('App started');
+
 
 var driveMethods    =   [
                             'drive',
@@ -92,17 +98,17 @@ function sendCommand(opCode, toMode, dataBytes)
     {
         var buf = new Buffer(1 + (dataBytes === undefined ? 0 : dataBytes.length));
 
-        buf[0]  = opCode;
+        buf.writeUInt8(opCode, 0);
 
         if(dataBytes !== undefined)
         {
             for(var i = 0; i < dataBytes.length; i++)
             {
-                buf[i + 1] = dataBytes[i];
+                buf.writeUInt8(dataBytes[i], i + 1);
             }
         }
 
-        port.write(buf);
+        port.write('Hello?');
 
         if(toMode !== undefined)
         {
@@ -241,4 +247,4 @@ function playSong(songNumber)
 }
 
 init();
-changeMode(modes[1]);
+changeMode(modes[2]);
