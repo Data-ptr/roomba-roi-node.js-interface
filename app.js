@@ -213,7 +213,7 @@ function playSong(songNumber)
 
 
 //Setup
-port.on(open, function()
+port.on('open', function()
 {
     console.log('Serial port open');
 
@@ -237,5 +237,7 @@ port.on(open, function()
     }); 
 
     setTimeout(init, 50);
-    setTimeout(changeMode, 100, modes[2]); 
+    setTimeout(changeMode, 100, modes[0]); 
+    //setTimeout(sendCommand, 150, 139, undefined, [4,0,128]);
+
 });
